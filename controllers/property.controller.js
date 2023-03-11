@@ -38,21 +38,26 @@ const getAllProperties = async (req, res) => {
         res.header('x-total-count', count);
         res.header('Access-Control-Expose-Headers', 'x-total-count');
 
-        res.status(200).json({ properties });
+        res.status(200).json(properties);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 const getPropertyDetail = async (req, res) => {
-    const { id } = req.params;
-    const propertyExists = await Property.findOne({_id: id}).populate('creator');
+    try {
+        const { id } = req.params;
+        const propertyExists = await Property.findOne({_id: id}).populate('creator');
+    
+        if (propertyExists) {
+            res.status(200).json(propertyExists);
+        } else {
+            res.status(404).json({ message: 'Property not found' });
+        };
 
-    if (propertyExists) {
-        res.status(200).json(propertyExists);
-    } else {
-        res.status(404).json({ message: 'Property not found' });
-    };
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 const createProperty = async (req, res) => {
